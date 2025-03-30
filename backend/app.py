@@ -58,7 +58,7 @@ def detail_event(id: int):
 @app.route('/api/association/<int:id>/evenements', methods=['GET'])
 def association_events_list(id: int):
     df = evenements_df[evenements_df['association_id'] == id]
-    events = df.to_list(orient='records')
+    events = df.to_dict(orient='records')
     return jsonify(events), 200
 
 @app.route('/api/associations/type/<type>', methods=['GET'])
