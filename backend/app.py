@@ -55,6 +55,17 @@ def detail_event(id: int):
         event = evenements_df[evenements_df['id'] == id].to_dict(orient='records')[0]
         return jsonify(event), 200
 
+@app.route('/api/association/<int:id>/evenements', methods=['GET'])
+def association_events_list(id: int):
+    df = evenements_df[evenements_df['association_id'] == id]
+    events = df.to_list(orient='records')
+    return jsonify(events), 200
+
+@app.route('/api/associations/type/<type>', methods=['GET'])
+def association_type_list(type: str):
+    df = associations_df[associations_df['type'] == type]
+    associations = df.to_list(orient='records')
+    return jsonify(associations), 200
 
 if __name__ == '__main__':
     app.run(debug=False)
