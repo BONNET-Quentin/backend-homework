@@ -40,5 +40,21 @@ def detail_association(id: int):
         association = associations_df[associations_df['id'] == id].to_dict(orient='records')[0]
         return jsonify(association), 200
 
+@app.route('/api/evenements', methods=['GET'])
+def event_list():
+    L = []
+    for i in range(len(evenements_df)):
+        L.append(int(evenements_df.loc[i, 'id']))
+    return jsonify(L), 200
+
+@app.route('/api/evenement/<int:id>', methods=['GET'])
+def detail_event(id: int):
+    if id not in evenements_df['id'].values:
+        return jsonify({"error": "Event not found"}), 404
+    else:
+        event = evenements_df[evenements_df['id'] == id].to_dict(orient='records')[0]
+        return jsonify(event), 200
+
+
 if __name__ == '__main__':
     app.run(debug=False)
