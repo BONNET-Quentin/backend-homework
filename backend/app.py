@@ -64,7 +64,7 @@ def association_events_list(id: int):
 @app.route('/api/associations/type/<type>', methods=['GET'])
 def association_type_list(type: str):
     df = associations_df[associations_df['type'] == type]
-    associations = df.to_list(orient='records')
+    associations = df.to_dict(orient='records')
     return jsonify(associations), 200
 
 if __name__ == '__main__':
