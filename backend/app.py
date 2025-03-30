@@ -25,5 +25,20 @@ def home():
 def alive():
     return jsonify({"message": "Alive"}), 200
 
+@app.route('/api/associations', methods=['GET'])
+def association_list():
+    L = []
+    for i in range(len(associations_df)):
+        L.append(int(associations_df.loc[i, 'id']))
+    return jsonify(L), 200
+
+@app.route('/api/association/<int:id>', methods=['GET'])
+def detail_association(id: int):
+    if id not in associations_df['id'].values:
+        return jsonify({"error": "Association not found"}), 404
+    else:
+        association = associations_df[associations_df['id'] == id].to_dict(orient='records')[0]
+        return jsonify(association), 200
+
 if __name__ == '__main__':
     app.run(debug=False)
