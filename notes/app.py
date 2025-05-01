@@ -4,12 +4,14 @@ import requests
 from flask import redirect
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import text
+from flask_socketio import SocketIO
 from flask import request
 from flask import render_template
 
-VERSION = '0.1'
+VERSION = '16'
 ## usual Flask initilization
 app = Flask(__name__)
+socketio = SocketIO(app)
 
 
 ## DB declaration
@@ -37,7 +39,7 @@ with app.app_context():
 @app.route('/')
 def hello_world():
     # redirect to /front/notes
-    # actually this is just a rsponse with a 301 HTTP code
+    # actually this is just a response with a 301 HTTP code
     return redirect('/front/notes')
 
 @app.route('/db/alive')
@@ -105,6 +107,9 @@ def update_note_done_status(id):
         note.done = done
         db.session.commit()
 
+        # Emission Socket.IO to all clients
+        socketio.emit('note-updated', {'id': note.id, 'done': done})
+
         return dict(ok="ok")
     except Exception as exc:
         return dict(error=f"{type(exc)}: {exc}"), 422
@@ -147,5 +152,10 @@ def front_notes():
     return render_template('notes.html.j2', notes=notes, version=VERSION)
 
 
+@socketio.on('connect-ack')
+def connect_ack(message):
+    print(f'received ACK message: {message} of type {type(message)}')
+
+
 if __name__ == '__main__':
-    app.run()
+    socketio.run(app)
